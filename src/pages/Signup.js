@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import logininons from "../assest//signin.gif";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Imagestobase64 from "../helpers/Imagestobase64";
+import summryapi from "../Common/indedx";
+import { toast } from "react-toastify";
 
 const Singup = () => {
   const [showpassword, Setshowpassword] = useState(true);
@@ -13,8 +15,10 @@ const Singup = () => {
     password: "",
     name: "",
     showconfirmpassword: "",
-    profil: "",
-  });
+    profilePic: "",
+  }); 
+
+  const navigat = useNavigate();
   //  // /// // // // // / /
   const handelprofil = async (e) => {
     const file = e.target.files[0];
@@ -35,10 +39,30 @@ const Singup = () => {
       };
     });
   };
-  console.log("datalogin ,", data);
-
-  const handelsupmit = (e) => {
+  const handelsupmit = async (e) => {
     e.preventDefault();
+
+    if (data.password === data.showconfirmpassword) {
+      const dataresponse = await fetch(summryapi.signup.url, {
+        method: summryapi.signup.method,
+        headers: { "content-type": "application/json" }, // تصحيح الخطأ هنا
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await dataresponse.json(); // استخدام اسم مختلف هنا
+
+      if (responseData.success) {
+        toast.success(responseData.message);
+        navigat("/login");
+      }
+
+      if (responseData.error) {
+        toast.error(responseData.message);
+      }
+      console.log("responseData:", responseData);
+    } else {
+      console.log("Please check password and confirm password");
+    }
   };
 
   return (

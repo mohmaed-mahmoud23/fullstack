@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import logininons from "../assest//signin.gif";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import summryapi from "../Common/indedx";
+import { toast } from "react-toastify";
+import Context from "../context/inedx";
 const Login = () => {
   const [showpassword, Setshowpassword] = useState(true);
   const [data, Setdata] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+  const { fetchuserdetails } = useContext(Context);
 
   const hanedleonchange = (e) => {
     const { name, value } = e.target;
@@ -21,8 +26,28 @@ const Login = () => {
   };
   console.log("datalogin ", data);
 
-  const handelsupmit = (e) => {
+  const handelsupmit = async (e) => {
     e.preventDefault();
+
+    const dataRespons = await fetch(summryapi.signIn.url, {
+      method: summryapi.signIn.method,
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const dataapi = await dataRespons.json();
+
+    if (dataapi.success) {
+      toast.success(dataapi.message);
+      navigate("/");
+      fetchuserdetails();
+    }
+    if (dataapi.error) {
+      toast.error(dataapi.message);
+    }
   };
   return (
     <div className=" mx-auto   p-5">
@@ -30,7 +55,7 @@ const Login = () => {
         <div className=" w-20  h-30 mx-auto  rounded-full py-4">
           <img src={logininons} alt="login" />
         </div>
-        <form className=" p-10 flex flex-col gap-5" onClick={handelsupmit}>
+        <form className=" p-10 flex flex-col gap-5" onSubmit={handelsupmit}>
           <div className=" grid">
             <label className="  font- font-thin">Email :</label>
             <div className=" bg-slate-100 p-2">

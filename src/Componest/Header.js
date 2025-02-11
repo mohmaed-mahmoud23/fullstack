@@ -4,8 +4,11 @@ import { GrSearch } from "react-icons/gr";
 import { FaRegUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Header = () => {
+  const user = useSelector((state) => state?.user?.user);
+  console.log("use heder", user);
   return (
     <header className="   h-16  shadow-md  bg-white">
       <div className="container  flex   items-center   h-full px-4  max-auto  justify-between  ">
@@ -27,7 +30,8 @@ const Header = () => {
           </div>
         </div>
         <div className=" text-2xl cursor-pointer flex items-center gap-7">
-          <FaRegUser />
+          {user?.profilePic ? <img src={user?.profilePic} /> : <FaRegUser />}
+
           <div className=" text-3xl cursor-pointer  relative">
             <span>
               <CiShoppingCart />
